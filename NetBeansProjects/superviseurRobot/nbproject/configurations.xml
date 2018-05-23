@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="destijl_init"
+                   displayName="destijl_init"
+                   projectFiles="true">
+      <logicalFolder name="header" displayName="header" projectFiles="true">
+        <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/header/functions.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="src" displayName="src" projectFiles="true">
+        <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/src/functions.cpp</itemPath>
+      </logicalFolder>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/Makefile</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="src" displayName="src" projectFiles="true">
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/definitions.h</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/image.cpp</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/image.h</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/message.cpp</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/message.h</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.cpp</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.h</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.cpp</itemPath>
+      <itemPath>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../../Téléchargements/superviseur_robot-master/destijl_init</Elem>
+    <Elem>../../Téléchargements/superviseur_robot-master/src</Elem>
+    <Elem>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src</Elem>
+    <Elem>../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incFile>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/alarm.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/buffer.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/compat.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/cond.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/event.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/heap.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/mutex.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/queue.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/sem.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/task.h</pElem>
+            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/timer.h</pElem>
+          </incFile>
+          <commandLine>-D_GNU_SOURCE -D_REENTRANT -fasynchronous-unwind-tables -D__MERCURY__ -I/usr/xenomai/include/alchemy -g -D_WITH_TRACE_ -I/usr/xenomai/include/ -I/usr/xenomai/include/mercury -MMD -MP</commandLine>
+        </ccTool>
+        <linkerTool>
+          <commandLine>-D_GNU_SOURCE -D_REENTRANT -fasynchronous-unwind-tables -D__MERCURY__ -I/usr/xenomai/include/alchemy -L/usr/xenomai/lib -lalchemy -lcopperplate -lmercury -L/opt/vc/lib -I/usr/local/include -lopencv_highgui -lopencv_core -lopencv_imgproc -Wl,--no-as-needed -lalchemy -lcopperplate /usr/xenomai/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=/usr/xenomai/lib/dynlist.ld -L/usr/xenomai/lib -lmercury -lpthread -lrt -Wl,-rpath /usr/xenomai/lib -lopencv_highgui -lopencv_core -lopencv_imgcodecs -lraspicam_cv -lopencv_imgproc -lpthread</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/Makefile"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/header/functions.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/main.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/src/functions.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/definitions.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/image.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/image.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/message.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/message.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/Makefile"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/header/functions.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/main.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/src/functions.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/definitions.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/image.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/image.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/message.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/message.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
