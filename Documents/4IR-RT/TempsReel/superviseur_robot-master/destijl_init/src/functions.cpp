@@ -388,6 +388,7 @@ void f_battery(void *arg){
                     }
                     
                 }
+            
             rt_sem_broadcast(&sem_robotLost);
             rt_mutex_release(&mutex_robotStarted);
             
