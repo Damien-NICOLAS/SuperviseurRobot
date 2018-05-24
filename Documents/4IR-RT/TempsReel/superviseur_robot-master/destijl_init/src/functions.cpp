@@ -63,7 +63,7 @@ void f_sendToMon(void * arg) {
                 free_msgToMon_data(&msg);
                 rt_queue_free(&q_messageToMon, &msg);
             } else {
-                rt_sem_broadcast(&sem_communicationPerdue);
+                rt_sem_broadcast(&sem_communicationLost);
             }
         } else {
             printf("Error msg queue write: %s\n", strerror(-err));
@@ -111,11 +111,16 @@ void f_receiveFromMon(void *arg) {
                     rt_sem_v(&sem_openComRobot);
                 }
             } else if (strcmp(msg.header, HEADER_MTS_DMB_ORDER) == 0) {
-                if (msg.data[0] == DMB_START_WITHOUT_WD) { // Start robot
+                if (msg.data[0] == DMB_START_WITHOUT_WD) { // Start robot without watchdog
 #ifdef _WITH_TRACE_
                 printf("%s: message start robot\n", info.name);
 #endif 
                     rt_sem_v(&sem_startRobot);
+                } else if (msg.data[0] == DMB_START_WITH_WD) { // Start robot with watchdog
+                    rt_mutex_acquire(&mutex_watchdog, TM_INFINITE);
+                    watchdog = true;    
+                    rt_mutex_release(&mutex_watchdog);
+                               
 
                 } else if ((msg.data[0] == DMB_GO_BACK)
                         || (msg.data[0] == DMB_GO_FORWARD)
@@ -133,7 +138,7 @@ void f_receiveFromMon(void *arg) {
                 }
             }
         } else {
-            rt_sem_broadcast(&sem_communicationPerdue);
+            rt_sem_broadcast(&sem_communicationLost);
         }
             
 
@@ -156,6 +161,14 @@ void f_openComRobot(void * arg) {
 #ifdef _WITH_TRACE_
         printf("%s : sem_openComRobot arrived => open communication robot\n", info.name);
 #endif
+        /* Implémentation de la fonctionnalité 6 : Traitement de la perte de communication */
+        rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+        if(communicationPerdue){
+            rt_mutex_release(&mutex_communicationPerdue);
+            while(1){}
+        }
+        rt_mutex_release(&mutex_communicationPerdue);
+        
         err = open_communication_robot();
         if (err == 0) {
 #ifdef _WITH_TRACE_
@@ -174,36 +187,75 @@ void f_openComRobot(void * arg) {
 
 void f_startRobot(void * arg) {
     int err;
-
+    bool watchdogLoc;
+    bool commandPasTransmise = true;
+    
     /* INIT */
     RT_TASK_INFO info;
     rt_task_inquire(NULL, &info);
     printf("Init %s\n", info.name);
     rt_sem_p(&sem_barrier, TM_INFINITE);
+    
 
     while (1) {
 #ifdef _WITH_TRACE_
         printf("%s : Wait sem_startRobot\n", info.name);
 #endif
         rt_sem_p(&sem_startRobot, TM_INFINITE);
+        
+        /* Implémentation de la fonctionnalité 6 : Traitement de la perte de communication */
+        rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+        if(communicationPerdue){
+            rt_mutex_release(&mutex_communicationPerdue);
+            while(1){}
+        }
+        rt_mutex_release(&mutex_communicationPerdue);
+        
 #ifdef _WITH_TRACE_
         printf("%s : sem_startRobot arrived => Start robot\n", info.name);
 #endif
-        err = send_command_to_robot(DMB_START_WITHOUT_WD);
-        if (err == 0) {
+        
+        /* Implémentation fonctionnalité 10 : Démarrage du WatchDog*/
+        rt_mutex_acquire(&mutex_watchdog, TM_INFINITE);
+        watchdogLoc = watchdog;
+        rt_mutex_release(&mutex_watchdog);
+        
+        
+        while(commandPasTransmise){
+            err = send_command_to_robot(DMB_START_WITHOUT_WD);
+            
+            if(err == 0){
 #ifdef _WITH_TRACE_
-            printf("%s : the robot is started\n", info.name);
+    printf("%s : the robot is started\n", info.name);
 #endif
-            rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
-            robotStarted = 1;
-            rt_mutex_release(&mutex_robotStarted);
-            MessageToMon msg;
-            set_msgToMon_header(&msg, HEADER_STM_ACK);
-            write_in_queue(&q_messageToMon, msg);
-        } else {
-            MessageToMon msg;
-            set_msgToMon_header(&msg, HEADER_STM_NO_ACK);
-            write_in_queue(&q_messageToMon, msg);
+                rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
+                robotStarted = 1;
+                rt_mutex_release(&mutex_robotStarted);
+                MessageToMon msg;
+                set_msgToMon_header(&msg, HEADER_STM_ACK);
+                write_in_queue(&q_messageToMon, msg);
+                commandPasTransmise = false;
+                
+                // Remise à 0 du compteur lorsqu'une communication est réussie
+                rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);      
+                compteurPerte = 0;
+                rt_mutex_release(&mutex_compteurPerte);
+                
+                
+            }
+            else{
+                rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);      
+                compteurPerte++;
+                if(compteurPerte > 3){
+                    rt_sem_broadcast(&sem_robotLost);
+                    MessageToMon msg;
+                    set_msgToMon_header(&msg, HEADER_STM_NO_ACK);
+                    write_in_queue(&q_messageToMon, msg);
+                    commandPasTransmise = false; // Pour sortir de la boucle
+                }
+                rt_mutex_release(&mutex_compteurPerte);
+                
+            }
         }
     }
 }
