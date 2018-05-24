@@ -267,6 +267,9 @@ void f_move(void *arg) {
     printf("Init %s\n", info.name);
     rt_sem_p(&sem_barrier, TM_INFINITE);
 
+    char err;
+    bool commandeErr=false;
+    
     /* PERIODIC START */
 #ifdef _WITH_TRACE_
     printf("%s: start period\n", info.name);
@@ -283,13 +286,35 @@ void f_move(void *arg) {
 #endif
         rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
         if (robotStarted) {
-            rt_mutex_acquire(&mutex_move, TM_INFINITE);
-            send_command_to_robot(move);
-            rt_mutex_release(&mutex_move);
+            
+            rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
+            
+            if (compteurPerte<3 && commandeErr==false){
+            
+                rt_mutex_release(&mutex_compteurPerte);
+                rt_mutex_acquire(&mutex_move, TM_INFINITE);
+                err=send_command_to_robot(move);
+                rt_mutex_release(&mutex_move);
+                commandeErr=false;
 #ifdef _WITH_TRACE_
             printf("%s: the movement %c was sent\n", info.name, move);
-#endif            
+#endif
+                if (err!=ROBOT_OK){
+                            commandeErr=true;
+                            rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
+                            compteurPerte ++;
+                            rt_mutex_release(&mutex_compteurPerte);
+                        }
+            }
         }
+        else{
+            rt_mutex_release(&mutex_robotStarted);
+            while(1)
+            
+        }
+        rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
+        compteurPerte =0;
+        rt_mutex_release(&mutex_compteurPerte);
         rt_mutex_release(&mutex_robotStarted);
     }
 }
@@ -299,4 +324,72 @@ void write_in_queue(RT_QUEUE *queue, MessageToMon msg) {
     buff = rt_queue_alloc(&q_messageToMon, sizeof (MessageToMon));
     memcpy(buff, &msg, sizeof (MessageToMon));
     rt_queue_send(&q_messageToMon, buff, sizeof (MessageToMon), Q_NORMAL);
+}
+
+void f_battery(void *arg){
+    
+    char batLevel;
+    char err;
+    bool commandeErr=false;
+    /* INIT */
+    RT_TASK_INFO info;
+    rt_task_inquire(NULL, &info);
+    printf("Init %s\n", info.name);
+    rt_sem_p(&sem_barrier, TM_INFINITE);
+    
+     /* PERIODIC START */
+#ifdef _WITH_TRACE_
+    printf("%s: start period\n", info.name);
+#endif
+    rt_task_set_periodic(NULL, TM_NOW, 500000000);
+    while (1) {
+#ifdef _WITH_TRACE_
+        printf("%s: Wait period \n", info.name);
+#endif
+        rt_task_wait_period(NULL);
+#ifdef _WITH_TRACE_
+        printf("%s: Periodic activation\n", info.name);
+        printf("%s: move equals %c\n", info.name, move);
+#endif
+#ifdef _WITH_TRACE_
+            printf("%s : the robot is started\n", info.name);
+#endif
+        rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
+        if (robotStarted) {          
+            rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+            
+            if(communicationPerdue){
+                rt_mutex_release(&mutex_communicationPerdue);
+                rt_mutex_release(&mutex_robotStarted);
+                while(1)
+            }
+            rt_mutex_release(&mutex_communicationPerdue);
+            rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
+                if (compteurPerte<3 && commandeErr==false){
+                    rt_mutex_release(&mutex_compteurPerte);
+                    err=send_command_to_robot(DMB_GET_VBAT,&batLevel);
+                    if (err!=ROBOT_OK){
+                        commandeErr=true;
+                        rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
+                        compteurPerte ++;
+                        rt_mutex_release(&mutex_compteurPerte);
+                    }
+                
+                    else{
+                        commandeErr=false;
+                        rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
+                        compteurPerte=0;
+                        rt_mutex_release(&mutex_compteurPerte);
+                   
+                        MessageToMon msg;
+                        set_msgToMon_header(&msg, HEADER_STM_BAT);
+                        set_msgToMon_data(&msg,&batLevel);
+                        write_in_queue(&q_messageToMon, msg);
+                    }
+                    
+                }
+            rt_sem_broadcast(&sem_robotLost);
+            rt_mutex_release(&mutex_robotStarted);
+            
+    }
 }
