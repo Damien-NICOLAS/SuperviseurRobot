@@ -60,7 +60,7 @@ extern RT_SEM sem_serverOk;
 extern RT_SEM sem_startRobot;
 
 //Semaphore Robot :
-extern RT_SEM sem_communicationPerdue;
+extern RT_SEM sem_communicationLost;
 extern RT_SEM sem_startWD;
 extern RT_SEM sem_robotLost;
 
