@@ -306,6 +306,8 @@ void f_move(void *arg) {
                             rt_mutex_release(&mutex_compteurPerte);
                         }
             }
+        rt_sem_broadcast(&sem_robotLost);
+        rt_mutex_release(&mutex_robotStarted);
         }
         else{
             rt_mutex_release(&mutex_robotStarted);
