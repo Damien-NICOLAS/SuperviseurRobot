@@ -46,7 +46,7 @@ void f_sendToMon(void * arg) {
         rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
         if(communicationPerdue){
             rt_mutex_release(&mutex_communicationPerdue);
-            while(1){}
+            rt_task_sleep(TM_INFINITE);
         }
         rt_mutex_release(&mutex_communicationPerdue);
         
@@ -85,7 +85,7 @@ void f_receiveFromMon(void *arg) {
     rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
     if(communicationPerdue){
         rt_mutex_release(&mutex_communicationPerdue);
-        while(1){}
+        rt_task_sleep(TM_INFINITE);
     }
     rt_mutex_release(&mutex_communicationPerdue);
     
@@ -311,8 +311,7 @@ void f_move(void *arg) {
         }
         else{
             rt_mutex_release(&mutex_robotStarted);
-            while(1)
-            
+            rt_task_sleep(TM_INFINITE);
         }
         rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
         compteurPerte =0;
@@ -363,7 +362,7 @@ void f_battery(void *arg){
             if(communicationPerdue){
                 rt_mutex_release(&mutex_communicationPerdue);
                 rt_mutex_release(&mutex_robotStarted);
-                while(1)
+                rt_task_sleep(TM_INFINITE); 
             }
             rt_mutex_release(&mutex_communicationPerdue);
             rt_mutex_acquire(&mutex_compteurPerte, TM_INFINITE);
@@ -395,14 +394,12 @@ void f_battery(void *arg){
             rt_sem_broadcast(&sem_robotLost);
             rt_mutex_release(&mutex_robotStarted);
             
+        }
     }
 }
 
 void f_refreshWD(void *arg){
     printf("Hello");
-}
-void f_battery(void *arg){
-    printf("Hello ");
 }
 
 
