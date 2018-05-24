@@ -63,7 +63,7 @@ RT_SEM sem_serverOk;
 RT_SEM sem_startRobot;
 
 // Déclaration des sémaphores robot :
-RT_SEM sem_communicationPerdue;
+RT_SEM sem_communicationLost;
 RT_SEM sem_startWD;
 RT_SEM sem_robotLost;
 
@@ -164,7 +164,7 @@ void initStruct(void) {
     }
     
     /* Création des semaphores robot */
-    if (err = rt_sem_create(&sem_communicationPerdue, NULL, 0, S_FIFO)) {
+    if (err = rt_sem_create(&sem_communicationLost, NULL, 0, S_FIFO)) {
         printf("Error semaphore create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
