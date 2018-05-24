@@ -93,7 +93,7 @@ void f_receiveFromMon(void *arg) {
     printf("%s : waiting for sem_serverOk\n", info.name);
 #endif
     rt_sem_p(&sem_serverOk, TM_INFINITE);
-    do {
+    
 #ifdef _WITH_TRACE_
         printf("%s : waiting for a message from monitor\n", info.name);
 #endif
@@ -300,3 +300,36 @@ void write_in_queue(RT_QUEUE *queue, MessageToMon msg) {
     memcpy(buff, &msg, sizeof (MessageToMon));
     rt_queue_send(&q_messageToMon, buff, sizeof (MessageToMon), Q_NORMAL);
 }
+
+
+void f_refreshWD(void *arg){
+    printf("Hello");
+}
+void f_battery(void *arg){
+    printf("Hello ");
+}
+
+
+
+void f_repriseComm(void *arg){
+    printf("Hello");
+}
+
+void f_perteRobot(void *arg){
+     /* INIT */
+    int err;
+    
+    RT_TASK_INFO info;
+    rt_task_inquire(NULL, &info);
+    printf("Init %s\n", info.name);
+    rt_sem_p(&sem_barrier, TM_INFINITE);
+
+    
+     while (1) {
+#ifdef _WITH_TRACE_
+        printf("%s : Wait sem_robotLost\n", info.name);
+#endif
+        rt_sem_p(&sem_robotLost, TM_INFINITE);
+     }
+}
+      
