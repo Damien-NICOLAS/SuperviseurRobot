@@ -45,9 +45,10 @@ void f_sendToMon(void * arg) {
         /* Implémentation de la fonctionnalité 6 : Traitement de la perte de communication */
         rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
         if(communicationPerdue){
+            rt_mutex_release(&mutex_communicationPerdue);
             while(1){}
         }
-        rt_mutex_release(&mutex_robotStarted);
+        rt_mutex_release(&mutex_communicationPerdue);
         
 
 #ifdef _WITH_TRACE_
@@ -62,7 +63,7 @@ void f_sendToMon(void * arg) {
                 free_msgToMon_data(&msg);
                 rt_queue_free(&q_messageToMon, &msg);
             } else {
-                rt_sem_broadcast(&communicationPerdue);
+                rt_sem_broadcast(&sem_communicationPerdue);
             }
         } else {
             printf("Error msg queue write: %s\n", strerror(-err));
@@ -79,7 +80,15 @@ void f_receiveFromMon(void *arg) {
     rt_task_inquire(NULL, &info);
     printf("Init %s\n", info.name);
     rt_sem_p(&sem_barrier, TM_INFINITE);
-
+    
+    /* Implémentation de la fonctionnalité 6 : Traitement de la perte de communication */
+    rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+    if(communicationPerdue){
+        rt_mutex_release(&mutex_communicationPerdue);
+        while(1){}
+    }
+    rt_mutex_release(&mutex_communicationPerdue);
+    
 #ifdef _WITH_TRACE_
     printf("%s : waiting for sem_serverOk\n", info.name);
 #endif
@@ -88,40 +97,44 @@ void f_receiveFromMon(void *arg) {
 #ifdef _WITH_TRACE_
         printf("%s : waiting for a message from monitor\n", info.name);
 #endif
+        /* Implémentation de la fonctionnalité 5 : Détection de la perte de communication */
         if(receive_message_from_monitor(msg.header, msg.data) == 0){
+       
 #ifdef _WITH_TRACE_
         printf("%s: msg {header:%s,data=%s} received from UI\n", info.name, msg.header, msg.data);
 #endif
-        if (strcmp(msg.header, HEADER_MTS_COM_DMB) == 0) {
-            if (msg.data[0] == OPEN_COM_DMB) { // Open communication supervisor-robot
+            if (strcmp(msg.header, HEADER_MTS_COM_DMB) == 0) {
+                 if (msg.data[0] == OPEN_COM_DMB) { // Open communication supervisor-robot
 #ifdef _WITH_TRACE_
                 printf("%s: message open Xbee communication\n", info.name);
 #endif
-                rt_sem_v(&sem_openComRobot);
-            }
-        } else if (strcmp(msg.header, HEADER_MTS_DMB_ORDER) == 0) {
-            if (msg.data[0] == DMB_START_WITHOUT_WD) { // Start robot
+                    rt_sem_v(&sem_openComRobot);
+                }
+            } else if (strcmp(msg.header, HEADER_MTS_DMB_ORDER) == 0) {
+                if (msg.data[0] == DMB_START_WITHOUT_WD) { // Start robot
 #ifdef _WITH_TRACE_
                 printf("%s: message start robot\n", info.name);
 #endif 
-                rt_sem_v(&sem_startRobot);
+                    rt_sem_v(&sem_startRobot);
 
-            } else if ((msg.data[0] == DMB_GO_BACK)
-                    || (msg.data[0] == DMB_GO_FORWARD)
-                    || (msg.data[0] == DMB_GO_LEFT)
-                    || (msg.data[0] == DMB_GO_RIGHT)
-                    || (msg.data[0] == DMB_STOP_MOVE)) {
+                } else if ((msg.data[0] == DMB_GO_BACK)
+                        || (msg.data[0] == DMB_GO_FORWARD)
+                        || (msg.data[0] == DMB_GO_LEFT)
+                        || (msg.data[0] == DMB_GO_RIGHT)
+                        || (msg.data[0] == DMB_STOP_MOVE)) {
 
-                rt_mutex_acquire(&mutex_move, TM_INFINITE);
-                move = msg.data[0];
-                rt_mutex_release(&mutex_move);
+                    rt_mutex_acquire(&mutex_move, TM_INFINITE);
+                    move = msg.data[0];
+                    rt_mutex_release(&mutex_move);
 #ifdef _WITH_TRACE_
                 printf("%s: message update movement with %c\n", info.name, move);
 #endif
 
+                }
             }
+        } else {
+            rt_sem_broadcast(&sem_communicationPerdue);
         }
-    } else {
             
 
 }
