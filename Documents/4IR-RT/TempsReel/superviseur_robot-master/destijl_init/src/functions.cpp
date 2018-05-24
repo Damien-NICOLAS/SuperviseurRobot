@@ -42,7 +42,13 @@ void f_sendToMon(void * arg) {
     rt_sem_p(&sem_serverOk, TM_INFINITE);
     while (1) {
         
-        /* Implémentation*/
+        /* Implémentation de la fonctionnalité 6 : Traitement de la perte de communication */
+        rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+        if(communicationPerdue){
+            while(1){}
+        }
+        rt_mutex_release(&mutex_robotStarted);
+        
 
 #ifdef _WITH_TRACE_
         printf("%s : waiting for a message in queue\n", info.name);
@@ -52,7 +58,7 @@ void f_sendToMon(void * arg) {
             printf("%s : message {%s,%s} in queue\n", info.name, msg.header, msg.data);
 #endif
             /* Implémentation de la fonctionnalité 5 : Détection de perte de communication */
-            if(send_message_to_monitor(msg.header, msg.data)) {
+            if(send_message_to_monitor(msg.header, msg.data) == 0) {
                 free_msgToMon_data(&msg);
                 rt_queue_free(&q_messageToMon, &msg);
             } else {
