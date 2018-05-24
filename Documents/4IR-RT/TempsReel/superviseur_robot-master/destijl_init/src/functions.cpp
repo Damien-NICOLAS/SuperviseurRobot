@@ -425,4 +425,127 @@ void f_perteRobot(void *arg){
         rt_sem_p(&sem_robotLost, TM_INFINITE);
      }
 }
+
+void f_getImage(void *arg) {
+    /* INIT */
+    RT_TASK_INFO info;
+    rt_task_inquire(NULL, &info);
+    printf("Init %s\n", info.name);
+    
+    bool communicationPerdu_getImage;
+    bool isCamOpen;
+    bool isDemandeArena;
+    
+    Image image;
+    Camera cam;
+    Arene arena;
+    
+      /* PERIODIC START */
+#ifdef _WITH_TRACE_
+    printf("%s: start period\n", info.name);
+#endif  
+    rt_task_set_periodic(NULL, TM_NOW, 100000000);
+    while (1) {
+#ifdef _WITH_TRACE_
+        printf("%s: Wait period \n", info.name);
+#endif    
+        rt_task_wait_period(NULL);
+#ifdef _WITH_TRACE_
+        printf("%s : Wait mutex_communicationPerdue \n", info.name);
+#endif   
+        rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+        communicationPerdu_getImage = communicationPerdue;
+        rt_mutex_release(&mutex_communicationPerdue); 
+        //si la communication n'est pas perdu
+        if (communicationPerdu_getImage){
+#ifdef _WITH_TRACE_
+        printf("%s : Wait mutex_camOpen \n", info.name);
+#endif
+            rt_mutex_acquire(&mutex_camOpen, TM_INFINITE);
+            isCamOpen = camOpen;
+            rt_mutex_release(&mutex_camOpen);
+            //si la caméra est ouverte
+            if (isCamOpen){
+                get_image(cam,image);
+#ifdef _WITH_TRACE_
+        printf("%s : Wait mutex_demandeArena \n", info.name);
+#endif                
+                rt_mutex_acquire(&mutex_demadeArena, TM_INFINITE);
+                isDemandeArena = demadeArena;
+                rt_mutex_release(&mutex_demadeArena);   
+                //s'il y a une demande de l'arena
+                if(isDemandeArena){
+                    detect_arena(&image, &arena);
+                }//end of la demande de l'arena
+            }//end of la ouverture de caméra
+        }// end of la connexion 
+    }
+    
+}
+
+void f_openCamera(void *arg) {
+    /* INIT */
+    RT_TASK_INFO info;
+    rt_task_inquire(NULL, &info);
+    printf("Init %s\n", info.name);
+
+    bool communicationPerdu_Cam;
+    bool camIsOpen;
+    int i; 
+    Camera cam;
+    MessageToMon msg;
+
+    while(1){
+#ifdef _WITH_TRACE_
+        printf("%s : Wait sem_openCam\n", info.name);
+#endif
+        rt_sem_p(&sem_openCam, TM_INFINITE);
+#ifdef _WITH_TRACE_
+        printf("%s : Wait mutex_communicationPerdue \n", info.name);
+#endif   
+        rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+        communicationPerdu_Cam = communicationPerdue;
+        rt_mutex_release(&mutex_communicationPerdue);
+        //si la communication n'est pas perdu
+        if (!communicationPerdu_Cam ){
+             i = open_camera(cam);
+            // open: 0, can't open: -1
+             if (i==0){
+                camIsOpen = true;
+             }else{
+                camIsOpen = false;
+             }
+            
+#ifdef _WITH_TRACE_
+        printf("%s : Wait mutex_camOpen \n", info.name);
+#endif
+            rt_mutex_acquire(&mutex_camOpen, TM_INFINITE);
+            camOpen = camIsOpen;
+            rt_mutex_release(&mutex_camOpen);
+            //si la caméra est ouverte
+            if (camIsOpen){
+                //messageToMon!ACK
+                set_msgToMon_header(&msg, HEADER_STM_ACK);
+                write_in_queue(&q_messageToMon, msg);
+            }else{
+                //messageToMon!NAC
+                set_msgToMon_header(&msg, HEADER_STM_NO_ACK);
+                write_in_queue(&q_messageToMon, msg);
+            }
+#ifdef _WITH_TRACE_
+        printf("%s : Wait sem_closeCam\n", info.name);
+#endif
+            rt_sem_p(&sem_closeCam, TM_INFINITE);  
+            //fermature de la caméra
+            close_camera(cam);
+            camIsOpen = false;
+#ifdef _WITH_TRACE_
+        printf("%s : Wait mutex_camOpen \n", info.name);
+#endif
+            rt_mutex_acquire(&mutex_camOpen, TM_INFINITE);
+            camOpen = camIsOpen;
+            rt_mutex_release(&mutex_camOpen);       
+        }        
+    }
+}
       

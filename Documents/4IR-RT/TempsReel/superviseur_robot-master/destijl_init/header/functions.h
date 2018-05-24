@@ -76,6 +76,9 @@ extern bool communicationPerdue;
 extern int compteurPerte;
 //Shared Variable Arene :
 extern bool camOpen;
+extern bool demadeArena;
+extern bool reponseUser;
+extern bool computePosition;
 
 extern int MSG_QUEUE_SIZE;
 
@@ -85,6 +88,9 @@ extern int PRIORITY_TMOVE;
 extern int PRIORITY_TSENDTOMON;
 extern int PRIORITY_TRECEIVEFROMMON;
 extern int PRIORITY_TSTARTROBOT;
+
+extern int PRIORITY_GETIMAGE;
+extern int PRIORITY_OPENCAMERA;
 
 //Priority Robot :
 extern int PRIORITY_TREFRESHWD;
@@ -99,6 +105,9 @@ void f_receiveFromMon(void *arg);
 void f_openComRobot(void * arg);
 void f_move(void *arg);
 void f_startRobot(void *arg);
+
+void f_openCamera(void *arg);
+void f_getImage(void *arg);
 
 //Fonction Robot :
 void f_refreshWD(void *arg);
