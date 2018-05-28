@@ -136,6 +136,23 @@ void f_receiveFromMon(void *arg) {
 #endif
 
                 }
+            } else if (strcmp(msg.header, HEADER_MTS_CAMERA) == 0){
+                
+                //A COMPLETER PAR JUAN !!!
+                
+                if(msg.data[0] == CAM_OPEN){
+                    int x = 0;  
+                // Il attend un acquittement !
+                }
+                
+                
+            } else if (strcmp(msg.header, HEADER_MTS_MSG) == 0){
+                
+                printf("Réception d'un message");
+            } else if (strcmp(msg.header, HEADER_MTS_STOP) == 0){
+                // Arrêt du système 
+                printf("Arrêt système !");
+        
             }
         } else {
             rt_sem_broadcast(&sem_communicationLost);
@@ -165,7 +182,7 @@ void f_openComRobot(void * arg) {
         rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
         if(communicationPerdue){
             rt_mutex_release(&mutex_communicationPerdue);
-            while(1){}
+            rt_task_sleep(TM_INFINITE);
         }
         rt_mutex_release(&mutex_communicationPerdue);
         
@@ -207,7 +224,7 @@ void f_startRobot(void * arg) {
         rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
         if(communicationPerdue){
             rt_mutex_release(&mutex_communicationPerdue);
-            while(1){}
+            rt_task_sleep(TM_INFINITE);
         }
         rt_mutex_release(&mutex_communicationPerdue);
         
@@ -284,6 +301,14 @@ void f_move(void *arg) {
         printf("%s: Periodic activation\n", info.name);
         printf("%s: move equals %c\n", info.name, move);
 #endif
+        /*Implémentation de la fonctionnalité 6 : Traitement de la perte de communication*/
+        rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+        if(communicationPerdue){
+            rt_mutex_release(&mutex_communicationPerdue);
+             rt_task_sleep(TM_INFINITE);
+        }
+        rt_mutex_release(&mutex_communicationPerdue);
+        
         rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
         if (robotStarted) {
             
