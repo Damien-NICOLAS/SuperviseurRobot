@@ -43,6 +43,10 @@ extern RT_TASK th_battery;
 extern RT_TASK th_repriseComm;
 extern RT_TASK th_perteRobot;
 
+//Thread Arene :
+extern RT_TASK th_openCamera;
+extern RT_TASK th_getImage;
+
 extern RT_MUTEX mutex_robotStarted;
 extern RT_MUTEX mutex_move;
 
@@ -52,6 +56,7 @@ extern RT_MUTEX mutex_communicationPerdue;
 extern RT_MUTEX mutex_compteurPerte;
 //Mutex Arene :
 extern RT_MUTEX mutex_camOpen;
+extern RT_MUTEX mutex_demandeArena;
 
 
 extern RT_SEM sem_barrier;
@@ -63,6 +68,10 @@ extern RT_SEM sem_startRobot;
 extern RT_SEM sem_communicationLost;
 extern RT_SEM sem_startWD;
 extern RT_SEM sem_robotLost;
+
+//Semaphore Camera
+extern RT_SEM sem_openCamera;
+extern RT_SEM sem_closeCam;
 
 extern RT_QUEUE q_messageToMon;
 
@@ -76,7 +85,7 @@ extern bool communicationPerdue;
 extern int compteurPerte;
 //Shared Variable Arene :
 extern bool camOpen;
-extern bool demadeArena;
+extern bool demandeArena;
 extern bool reponseUser;
 extern bool computePosition;
 

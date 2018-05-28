@@ -7,11 +7,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/Makefile</file>
+            <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.h</file>
             <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/main.cpp</file>
-            <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.cpp</file>
             <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/header/functions.h</file>
             <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/destijl_init/src/functions.cpp</file>
+            <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/src/message.cpp</file>
+            <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/src/robot.h</file>
+            <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/src/definitions.h</file>
+            <file>file:/home/dnicolas/Documents/4IR-RT/TempsReel/superviseur_robot-master/src/monitor.cpp</file>
         </group>
     </open-files>
 </project-private>

@@ -65,17 +65,17 @@
       <compileType>
         <ccTool>
           <incFile>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/alarm.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/buffer.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/compat.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/cond.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/event.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/heap.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/mutex.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/queue.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/sem.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/task.h</pElem>
-            <pElem>../../Documents/4IR-RT/TempsReel/include_xenomai/include/timer.h</pElem>
+            <pElem>include_xenomai/include/alarm.h</pElem>
+            <pElem>include_xenomai/include/buffer.h</pElem>
+            <pElem>include_xenomai/include/compat.h</pElem>
+            <pElem>include_xenomai/include/cond.h</pElem>
+            <pElem>include_xenomai/include/event.h</pElem>
+            <pElem>include_xenomai/include/heap.h</pElem>
+            <pElem>include_xenomai/include/mutex.h</pElem>
+            <pElem>include_xenomai/include/queue.h</pElem>
+            <pElem>include_xenomai/include/sem.h</pElem>
+            <pElem>include_xenomai/include/task.h</pElem>
+            <pElem>include_xenomai/include/timer.h</pElem>
           </incFile>
           <commandLine>-D_GNU_SOURCE -D_REENTRANT -fasynchronous-unwind-tables -D__MERCURY__ -I/usr/xenomai/include/alchemy -g -D_WITH_TRACE_ -I/usr/xenomai/include/ -I/usr/xenomai/include/mercury -MMD -MP</commandLine>
         </ccTool>
