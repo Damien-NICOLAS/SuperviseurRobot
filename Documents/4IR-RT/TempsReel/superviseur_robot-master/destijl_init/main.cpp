@@ -25,8 +25,7 @@ RT_TASK th_receiveFromMon;
 RT_TASK th_openComRobot;
 RT_TASK th_startRobot;
 RT_TASK th_move;
-RT_TASK th_getImage;
-RT_TASK th_openCamera;
+
 
 //Déclaration des taches robots :
 RT_TASK th_refreshWD;
@@ -34,15 +33,19 @@ RT_TASK th_battery;
 RT_TASK th_repriseComm;
 RT_TASK th_perteRobot;
 
+//Déclaration des taches arène
+RT_TASK th_openCamera;
+RT_TASK th_getImage;
+
 // Déclaration des priorités des taches
 int PRIORITY_TSERVER = 30;
 int PRIORITY_TOPENCOMROBOT = 20;
 int PRIORITY_TMOVE = 10;
-int PRIORITY_TSENDTOMON = 25;
+int PRIORITY_TSENDTOMON = 25;  // TO CHANGE 
 int PRIORITY_TRECEIVEFROMMON = 22;
 int PRIORITY_TSTARTROBOT = 20;
-int PRIORITY_GETIMAGE = 12;
-int PRIORITY_OPENCAMERA = 18;
+int PRIORITY_TGETIMAGE = 12;
+int PRIORITY_TOPENCAMERA = 18;
 
 // Déclaration des priorités des taches robots :
 
@@ -64,6 +67,10 @@ RT_MUTEX mutex_watchdog;
 RT_MUTEX mutex_communicationPerdue;
 RT_MUTEX mutex_compteurPerte;
 
+//Déclaration des mutex arène :
+
+
+
 // Déclaration des sémaphores
 RT_SEM sem_barrier;
 RT_SEM sem_openComRobot;
@@ -76,6 +83,10 @@ RT_SEM sem_closeCam;
 RT_SEM sem_communicationLost;
 RT_SEM sem_startWD;
 RT_SEM sem_robotLost;
+
+
+// Déclaration des sémaphores Camera :
+RT_SEM sem_openCamera;
 
 // Déclaration des files de message
 RT_QUEUE q_messageToMon;
@@ -91,6 +102,12 @@ char move = DMB_STOP_MOVE;
 bool watchdog = false;
 bool communicationPerdue = false;
 int compteurPerte = 0;
+
+// Déclaration des ressources partagées arène :
+bool camOpen = false;
+bool demandeArena = false;
+bool responseUser = false;
+bool compurePosition = false;
 
 /**
  * \fn void initStruct(void)
@@ -170,6 +187,16 @@ void initStruct(void) {
         printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    /* Création des mutex arène */
+    if (err = rt_mutex_create(&mutex_camOpen, NULL)) {
+        printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    if (err = rt_mutex_create(&mutex_demandeArena, NULL)) {
+        printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    
 
     /* Creation du semaphore */
     if (err = rt_sem_create(&sem_barrier, NULL, 0, S_FIFO)) {
@@ -210,7 +237,16 @@ void initStruct(void) {
         printf("Error semaphore create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-
+    
+    /* Création des sémaphores arene*/
+    if (err = rt_sem_create(&sem_openCamera, NULL, 0, S_FIFO)) {
+        printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    if (err = rt_sem_create(&sem_closeCam, NULL, 0, S_FIFO)) {
+        printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
 
     /* Creation des taches */
     if (err = rt_task_create(&th_server, "th_server", 0, PRIORITY_TSERVER, 0)) {
@@ -237,11 +273,11 @@ void initStruct(void) {
         printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-    if (err = rt_task_create(&th_getImage, "th_getImage", 0, PRIORITY_GETIMAGE, 0)) {
+    if (err = rt_task_create(&th_getImage, "th_getImage", 0, PRIORITY_TGETIMAGE, 0)) {
         printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-    if (err = rt_task_create(&th_openCamera, "th_openCamera", 0, PRIORITY_OPENCAMERA, 0)) {
+    if (err = rt_task_create(&th_openCamera, "th_openCamera", 0, PRIORITY_TOPENCAMERA, 0)) {
         printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
@@ -263,6 +299,8 @@ void initStruct(void) {
         printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    
+  
     
 
     /* Creation des files de messages */
