@@ -136,13 +136,38 @@ void f_receiveFromMon(void *arg) {
 #endif
 
                 }
-            } else if (strcmp(msg.header, HEADER_MTS_CAMERA) == 0){
+             } else if (strcmp(msg.header, HEADER_MTS_CAMERA) == 0){//msg sur la caméra
                 
-                //A COMPLETER PAR JUAN !!!
-                
-                if(msg.data[0] == CAM_OPEN){
+                if(msg.data[0] == CAM_OPEN){//open cam
                     int x = 0;  
                 // Il attend un acquittement !
+                    rt_mutex_acquire(&mutex_camOpen, TM_INFINITE);
+                    camOpen = true;
+                    rt_mutex_release(&mutex_camOpen);
+                }else if(msg.data[0] == CAM_CLOSE){//close cam
+                    rt_mutex_acquire(&mutex_camOpen, TM_INFINITE);
+                    camOpen = false;
+                    rt_mutex_release(&mutex_camOpen);
+                }else if(msg.data[0] == CAM_ASK_ARENA){//demade arena
+                    rt_mutex_acquire(&mutex_demadeArena, TM_INFINITE);
+                    demadeArena = true;
+                    rt_mutex_release(&mutex_demadeArena);
+                }else if(msg.data[0] == CAM_ARENA_CONFIRM){//arena ok
+                    rt_mutex_acquire(&mutex_reponseUser, TM_INFINITE);
+                    responseUser = true;
+                    rt_mutex_release(&mutex_reponseUser);
+                }else if(msg.data[0] == CAM_ARENA_INFIRM){//arena ko
+                    rt_mutex_acquire(&mutex_reponseUser, TM_INFINITE);
+                    responseUser = false;
+                    rt_mutex_release(&mutex_reponseUser);
+                }else if(msg.data[0] == CAM_COMPUTE_POSITION){//demande compute la position
+                    rt_mutex_acquire(&mutex_comuptePosition, TM_INFINITE);
+                    computePosition = true;
+                    rt_mutex_release(&mutex_comuptePosition);
+                }else if(msg.data[0] == CAM_STOP_COMPUTE_POSITION){//demade stop compute
+                    rt_mutex_acquire(&mutex_comuptePosition, TM_INFINITE);
+                    computePosition = false;
+                    rt_mutex_release(&mutex_comuptePosition);
                 }
                 
                 
