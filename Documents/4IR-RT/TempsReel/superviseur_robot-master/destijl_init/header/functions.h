@@ -115,8 +115,8 @@ void f_openComRobot(void * arg);
 void f_move(void *arg);
 void f_startRobot(void *arg);
 
-void f_openCamera(void *arg);
-void f_getImage(void *arg);
+//void f_openCamera(void *arg);
+//void f_getImage(void *arg);
 
 //Fonction Robot :
 void f_refreshWD(void *arg);
