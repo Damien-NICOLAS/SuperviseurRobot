@@ -429,7 +429,7 @@ void f_perteRobot(void *arg){
         rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
         robotStarted = 0;
         rt_mutex_release(&mutex_robotStarted);
-        rt_sem_broadcast(&sem_openComRobot;
+        rt_sem_broadcast(&sem_openComRobot);
 
         
 
@@ -479,12 +479,12 @@ void f_getImage(void *arg) {
             rt_mutex_release(&mutex_camOpen);
             //si la caméra est ouverte
             if (isCamOpen){
-                get_image(cam,image);
+                get_image(&cam, &image);
 #ifdef _WITH_TRACE_
         printf("%s : Wait mutex_demandeArena \n", info.name);
 #endif                
                 rt_mutex_acquire(&mutex_demandeArena, TM_INFINITE);
-                isDemandeArena = demadeArena;
+                isDemandeArena = demandeArena;
                 rt_mutex_release(&mutex_demandeArena);   
                 //s'il y a une demande de l'arena
                 if(isDemandeArena){
@@ -521,7 +521,7 @@ void f_openCamera(void *arg) {
         rt_mutex_release(&mutex_communicationPerdue);
         //si la communication n'est pas perdu
         if (!communicationPerdu_Cam ){
-             i = open_camera(cam);
+             i = open_camera(&cam);
             // open: 0, can't open: -1
              if (i==0){
                 camIsOpen = true;
@@ -550,7 +550,7 @@ void f_openCamera(void *arg) {
 #endif
             rt_sem_p(&sem_closeCam, TM_INFINITE);  
             //fermature de la caméra
-            close_camera(cam);
+            close_camera(&cam);
             camIsOpen = false;
 #ifdef _WITH_TRACE_
         printf("%s : Wait mutex_camOpen \n", info.name);
