@@ -68,7 +68,10 @@ RT_MUTEX mutex_communicationPerdue;
 RT_MUTEX mutex_compteurPerte;
 
 //Déclaration des mutex arène :
-
+RT_MUTEX mutex_camOpen;
+RT_MUTEX mutex_comuptePosition;
+RT_MUTEX mutex_demadeArena;
+RT_MUTEX mutex_reponseUser;
 
 
 // Déclaration des sémaphores
@@ -86,7 +89,8 @@ RT_SEM sem_robotLost;
 
 
 // Déclaration des sémaphores Camera :
-RT_SEM sem_openCamera;
+RT_SEM sem_openCam;
+RT_SEM sem_closeCam;
 
 // Déclaration des files de message
 RT_QUEUE q_messageToMon;
@@ -105,6 +109,7 @@ bool communicationPerdue = false;
 int compteurPerte = 0;
 
 // Déclaration des ressources partagées arène :
+bool camOpen = false;
 bool demandeArena = false;
 bool responseUser = false;
 bool computePosition = false;
@@ -187,12 +192,21 @@ void initStruct(void) {
         printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+        
     /* Création des mutex arène */
     if (err = rt_mutex_create(&mutex_camOpen, NULL)) {
         printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     if (err = rt_mutex_create(&mutex_demandeArena, NULL)) {
+        printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+          if (err = rt_mutex_create(&mutex_reponseUser, NULL)) {
+        printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+      if (err = rt_mutex_create(&mutex_comuptePosition, NULL)) {
         printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
@@ -247,7 +261,7 @@ void initStruct(void) {
     }
     
     /* Création des sémaphores arene*/
-    if (err = rt_sem_create(&sem_openCamera, NULL, 0, S_FIFO)) {
+    if (err = rt_sem_create(&sem_openCam, NULL, 0, S_FIFO)) {
         printf("Error semaphore create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
