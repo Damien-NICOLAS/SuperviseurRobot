@@ -423,6 +423,19 @@ void f_perteRobot(void *arg){
         printf("%s : Wait sem_robotLost\n", info.name);
 #endif
         rt_sem_p(&sem_robotLost, TM_INFINITE);
+        MessageToMon msg;
+        set_msgToMon_header(&msg, HEADER_STM_LOST_DMB);
+        write_in_queue(&q_messageToMon, msg);
+        rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
+        robotStarted = 0;
+        rt_mutex_release(&mutex_robotStarted);
+        rt_sem_broadcast(&sem_openComRobot;
+
+        
+
+        
+        
+        
      }
 }
 
@@ -470,9 +483,9 @@ void f_getImage(void *arg) {
 #ifdef _WITH_TRACE_
         printf("%s : Wait mutex_demandeArena \n", info.name);
 #endif                
-                rt_mutex_acquire(&mutex_demadeArena, TM_INFINITE);
+                rt_mutex_acquire(&mutex_demandeArena, TM_INFINITE);
                 isDemandeArena = demadeArena;
-                rt_mutex_release(&mutex_demadeArena);   
+                rt_mutex_release(&mutex_demandeArena);   
                 //s'il y a une demande de l'arena
                 if(isDemandeArena){
                     detect_arena(&image, &arena);
@@ -499,7 +512,7 @@ void f_openCamera(void *arg) {
 #ifdef _WITH_TRACE_
         printf("%s : Wait sem_openCam\n", info.name);
 #endif
-        rt_sem_p(&sem_openCam, TM_INFINITE);
+        rt_sem_p(&sem_openCamera, TM_INFINITE);
 #ifdef _WITH_TRACE_
         printf("%s : Wait mutex_communicationPerdue \n", info.name);
 #endif   
