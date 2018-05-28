@@ -86,6 +86,9 @@ int MSG_QUEUE_SIZE = 10;
 int etatCommMoniteur = 1;
 int robotStarted = 0;
 char move = DMB_STOP_MOVE;
+bool camOpen = false;
+bool demadeArena = false;
+
 
 // Déclaration des ressources partagées robot :
 bool watchdog = false;

@@ -432,13 +432,19 @@ void f_getImage(void *arg) {
     rt_task_inquire(NULL, &info);
     printf("Init %s\n", info.name);
     
+    //variables partagées
     bool communicationPerdu_getImage;
     bool isCamOpen;
     bool isDemandeArena;
+    bool reponseUserArena;
+    
+    //variables locales
+    bool isArenaOk = false;
     
     Image image;
     Camera cam;
     Arene arena;
+    Jpg imageCompress;
     
       /* PERIODIC START */
 #ifdef _WITH_TRACE_
@@ -466,7 +472,7 @@ void f_getImage(void *arg) {
             rt_mutex_release(&mutex_camOpen);
             //si la caméra est ouverte
             if (isCamOpen){
-                get_image(cam,image);
+                get_image(&cam,&image);
 #ifdef _WITH_TRACE_
         printf("%s : Wait mutex_demandeArena \n", info.name);
 #endif                
@@ -476,6 +482,29 @@ void f_getImage(void *arg) {
                 //s'il y a une demande de l'arena
                 if(isDemandeArena){
                     detect_arena(&image, &arena);
+                    if (arena == NULL){
+                        //messageToMon!NAC
+                        set_msgToMon_header(&msg, HEADER_STM_NO_ACK);
+                        write_in_queue(&q_messageToMon, msg);
+                    }else{//end of arena est null
+                        draw_arena(&image,&image,&arena);
+                        compress_image(&image,&imageCompress);
+                        //sendImage
+                        
+                        //wait for la reponse d'utilisateur
+                        
+                        //la reponse d'utilisateur -- reponseUserArena
+                        #ifdef _WITH_TRACE_
+                        printf("%s : Wait mutex_communicationPerdue \n", info.name);
+                        #endif   
+                        rt_mutex_acquire(&mutex_comuptePosition, TM_INFINITE);
+                        reponseUserArena = reponseUser;
+                        rt_mutex_release(&mutex_comuptePosition);
+                        if (reponseUserArena){//si confirmé
+                            //save arena
+                            
+                        }//end of reponse d'utilisateur 
+                    }//end of arena pas null
                 }//end of la demande de l'arena
             }//end of la ouverture de caméra
         }// end of la connexion 
@@ -508,7 +537,7 @@ void f_openCamera(void *arg) {
         rt_mutex_release(&mutex_communicationPerdue);
         //si la communication n'est pas perdu
         if (!communicationPerdu_Cam ){
-             i = open_camera(cam);
+             i = open_camera(&cam);
             // open: 0, can't open: -1
              if (i==0){
                 camIsOpen = true;
@@ -537,7 +566,7 @@ void f_openCamera(void *arg) {
 #endif
             rt_sem_p(&sem_closeCam, TM_INFINITE);  
             //fermature de la caméra
-            close_camera(cam);
+            close_camera(&cam);
             camIsOpen = false;
 #ifdef _WITH_TRACE_
         printf("%s : Wait mutex_camOpen \n", info.name);
