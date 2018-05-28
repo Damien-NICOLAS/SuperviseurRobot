@@ -430,7 +430,30 @@ void f_refreshWD(void *arg){
 
 
 void f_repriseComm(void *arg){
-    printf("Hello");
+    /* Implémentation de la fonctionnalité 6 : Traitement de la perte de communication vec le node_js*/
+    
+     /* INIT */
+    RT_TASK_INFO info;
+    rt_task_inquire(NULL, &info);
+    printf("Init %s\n", info.name);
+    rt_sem_p(&sem_barrier, TM_INFINITE);
+    
+    while(1){
+#ifdef _WITH_TRACE_
+        printf("%s : Wait sem_communicationLost\n", info.name);
+#endif
+        rt_sem_p(&sem_communicationLost, TM_INFINITE);
+       
+        kill_nodejs();
+        close_server();
+        printf("Node_JS est perdu");
+        rt_mutex_acquire(&mutex_communicationPerdue, TM_INFINITE);
+        communicationPerdue = true;
+        rt_mutex_release(&mutex_communicationPerdue);  
+     
+    }
+    
+    
 }
 
 void f_perteRobot(void *arg){
