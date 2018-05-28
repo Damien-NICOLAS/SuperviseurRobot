@@ -337,14 +337,14 @@ void startTasks() {
         printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-    if (err = rt_task_start(&th_getImage, &f_getImage, NULL)) {
-        printf("Error task start: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
-    if (err = rt_task_start(&th_openCamera, &f_openCamera,NULL)) {
-        printf("Error task start: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
+//    if (err = rt_task_start(&th_getImage, &f_getImage, NULL)) {
+//        printf("Error task start: %s\n", strerror(-err));
+//        exit(EXIT_FAILURE);
+//    }
+//    if (err = rt_task_start(&th_openCamera, &f_openCamera,NULL)) {
+//        printf("Error task start: %s\n", strerror(-err));
+//        exit(EXIT_FAILURE);
+//    }
     
     /* Démarage des taches : */
     if (err = rt_task_start(&th_refreshWD, &f_refreshWD, NULL)) {
@@ -381,8 +381,8 @@ void deleteTasks() {
     rt_task_delete(&th_server);
     rt_task_delete(&th_openComRobot);
     rt_task_delete(&th_move);
-    rt_task_delete(&th_getImage);
-    rt_task_delete(&th_openCamera);
+//    rt_task_delete(&th_getImage);
+//    rt_task_delete(&th_openCamera);
     
     /* Delete tache robot  :*/
     rt_task_delete(&th_refreshWD);
