@@ -98,8 +98,6 @@ int etatCommMoniteur = 1;
 int robotStarted = 0;
 char move = DMB_STOP_MOVE;
 bool camOpen = false;
-bool demadeArena = false;
-
 
 // Déclaration des ressources partagées robot :
 bool watchdog = false;
@@ -109,7 +107,7 @@ int compteurPerte = 0;
 // Déclaration des ressources partagées arène :
 bool demandeArena = false;
 bool responseUser = false;
-bool compurePosition = false;
+bool computePosition = false;
 
 /**
  * \fn void initStruct(void)
