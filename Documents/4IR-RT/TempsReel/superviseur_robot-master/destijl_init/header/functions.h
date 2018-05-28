@@ -52,19 +52,23 @@ extern RT_MUTEX mutex_communicationPerdue;
 extern RT_MUTEX mutex_compteurPerte;
 //Mutex Arene :
 extern RT_MUTEX mutex_camOpen;
+extern RT_MUTEX mutex_comuptePosition;
+extern RT_MUTEX mutex_demadeArena;
+extern RT_MUTEX mutex_reponseUser;
 
-
-extern RT_SEM sem_barrier;
-extern RT_SEM sem_openComRobot;
-extern RT_SEM sem_serverOk;
-extern RT_SEM sem_startRobot;
+//Semaphore Arene :
+extern RT_SEM sem_closeCam;
+extern RT_SEM sem_openCam;
 
 //Semaphore Robot :
 extern RT_SEM sem_communicationPerdue;
 extern RT_SEM sem_startWD;
 extern RT_SEM sem_robotLost;
-
 extern RT_QUEUE q_messageToMon;
+extern RT_SEM sem_barrier;
+extern RT_SEM sem_openComRobot;
+extern RT_SEM sem_serverOk;
+extern RT_SEM sem_startRobot;
 
 extern int etatCommMoniteur;
 extern int robotStarted;

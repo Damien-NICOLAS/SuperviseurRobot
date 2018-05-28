@@ -437,15 +437,21 @@ void f_getImage(void *arg) {
     bool isCamOpen;
     bool isDemandeArena;
     bool reponseUserArena;
+    bool compute;
     
     //variables locales
-    bool isArenaOk = false;
-    
-    Image image;
+    bool arenaOk = false;
+    MessageToMon msg;
+    Image image, imageAux;
     Camera cam;
-    Arene arena;
+    Arene arena, arenaAux ;
     Jpg imageCompress;
+    Position position, position_null;
     
+    position_null.angle = -1;
+    position_null.center = -1;
+    position_null.direction = -1:
+            
       /* PERIODIC START */
 #ifdef _WITH_TRACE_
     printf("%s: start period\n", info.name);
@@ -480,31 +486,64 @@ void f_getImage(void *arg) {
                 isDemandeArena = demadeArena;
                 rt_mutex_release(&mutex_demadeArena);   
                 //s'il y a une demande de l'arena
-                if(isDemandeArena){
-                    detect_arena(&image, &arena);
-                    if (arena == NULL){
+                if(isDemandeArena){          
+                    if ( detect_arena(&image, &arenaAux) == -1){
                         //messageToMon!NAC
                         set_msgToMon_header(&msg, HEADER_STM_NO_ACK);
                         write_in_queue(&q_messageToMon, msg);
                     }else{//end of arena est null
-                        draw_arena(&image,&image,&arena);
-                        compress_image(&image,&imageCompress);
+                        draw_arena(&image,&imageAux,&arenaAux);
+                        //compress image
+                        compress_image(&imageAux,&imageCompress);
                         //sendImage
-                        
+                        set_msgToMon_header(&msg, HEADER_STM_IMAGE);// HEADER_STM_IMAGE = IMG
+                        set_msgToMon_data(&msg, &imageCompress);
+                        print_msgToMon(&msg);
+                      
                         //wait for la reponse d'utilisateur
                         
                         //la reponse d'utilisateur -- reponseUserArena
                         #ifdef _WITH_TRACE_
-                        printf("%s : Wait mutex_communicationPerdue \n", info.name);
+                        printf("%s : Wait mutex_comuptePosition \n", info.name);
                         #endif   
-                        rt_mutex_acquire(&mutex_comuptePosition, TM_INFINITE);
+                        rt_mutex_acquire(&mutex_reponseUser, TM_INFINITE);
                         reponseUserArena = reponseUser;
-                        rt_mutex_release(&mutex_comuptePosition);
+                        rt_mutex_release(&mutex_reponseUser);
                         if (reponseUserArena){//si confirmé
-                            //save arena
-                            
+                            //save arena 
+                            arena = arenaAux;
+                            arenaOk = true;
                         }//end of reponse d'utilisateur 
                     }//end of arena pas null
+                }else{//pas de demade de l'arena
+                    if (arenaOk){//il y a un arena detecté
+                        draw_arena(&image,&image,&arena);
+                    }//end if s'il y a un arena detecté
+                        #ifdef _WITH_TRACE_
+                        printf("%s : Wait mutex_comuptePosition \n", info.name);
+                        #endif   
+                        rt_mutex_acquire(&mutex_comuptePosition, TM_INFINITE);
+                         compute = computePosition;
+                        rt_mutex_release(&mutex_comuptePosition);
+                        if (compute){//si on compute la position
+                            if (detect_position(&image, &position, &arena)==-1){
+                                //send position NULL(-1,-1)
+                                set_msgToMon_header(&msg, HEADER_STM_POS);
+                                set_msgToMon_data(&msg, &position_null);
+                            }else{//position non NULL
+                                draw_position(&image, &image, &position);
+                                //send position
+                                set_msgToMon_header(&msg, HEADER_STM_POS);
+                                set_msgToMon_data(&msg, &position);
+                            }
+                       
+                        }//end of si on compute la position
+                        //compress image
+                        compress_image(&image,&imageCompress);
+                        //sendImage
+                        set_msgToMon_header(&msg, HEADER_STM_IMAGE);// HEADER_STM_IMAGE = IMG
+                        set_msgToMon_data(&msg, &imageCompress);
+                        print_msgToMon(&msg);
                 }//end of la demande de l'arena
             }//end of la ouverture de caméra
         }// end of la connexion 
@@ -554,11 +593,11 @@ void f_openCamera(void *arg) {
             //si la caméra est ouverte
             if (camIsOpen){
                 //messageToMon!ACK
-                set_msgToMon_header(&msg, HEADER_STM_ACK);
+                set_msgToMon_header(&msg, HEADER_STM_ACK);//HEADER_STM_ACK = ACK
                 write_in_queue(&q_messageToMon, msg);
             }else{
                 //messageToMon!NAC
-                set_msgToMon_header(&msg, HEADER_STM_NO_ACK);
+                set_msgToMon_header(&msg, HEADER_STM_NO_ACK);//HEADER_STM_NO_ACK = NAK
                 write_in_queue(&q_messageToMon, msg);
             }
 #ifdef _WITH_TRACE_
