@@ -217,6 +217,14 @@ void initStruct(void) {
         printf("Error semaphore create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    if (err = rt_sem_create(&sem_openCam, NULL, 0, S_FIFO)) {
+        printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    if (err = rt_sem_create(&sem_closeCam, NULL, 0, S_FIFO)) {
+        printf("Error semaphore create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
     
     /* Création des semaphores robot */
     if (err = rt_sem_create(&sem_communicationLost, NULL, 0, S_FIFO)) {
