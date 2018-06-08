@@ -484,6 +484,7 @@ void f_getImage(void *arg) {
 #endif                
                 rt_mutex_acquire(&mutex_demadeArena, TM_INFINITE);
                 isDemandeArena = demadeArena;
+                demadeArena = false;
                 rt_mutex_release(&mutex_demadeArena);   
                 //s'il y a une demande de l'arena
                 if(isDemandeArena){          
@@ -523,7 +524,7 @@ void f_getImage(void *arg) {
                         printf("%s : Wait mutex_comuptePosition \n", info.name);
                         #endif   
                         rt_mutex_acquire(&mutex_comuptePosition, TM_INFINITE);
-                         compute = computePosition;
+                         compute = computePosition;                            
                         rt_mutex_release(&mutex_comuptePosition);
                         if (compute){//si on compute la position
                             if (detect_position(&image, &position, &arena)==-1){
